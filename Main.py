@@ -7,9 +7,21 @@ import random
 from datetime import date  
 
 today = date.today()
-choice_list = ["Bob" , "Daniel" , "John" , "Charlie"]
 
+items = ["Stationary" , "Candy" , "Books" , "Chocolate" , "Outside Food" , "Makeup" , "Sport" , "Clothes" , "Accessories" , "Video Games"]
+prices = [25 , 30 , 50 , 30 , 115 , 60 , 50 , 50 , 55 , 35 , 95]
+#Stationary: 25", 30, 100, black,font_tiny)
+#            draw_text("      Candy: 30", 30, 120,black,font_tiny)
+#            draw_text("      Books: 50", 30, 140, black,font_tiny)
+#            draw_text("      Chocolate: 30", 30, 160, black, font_tiny)
+#            draw_text("      Outside Food: 115", 30, 180, black, font_tiny)
+#            draw_text("      Makeup: 60", 30, 200, black, font_tiny)
+#            draw_text("      Sports: 50", 30, 220, black, font_tiny)
+#            draw_text("      Clothes: 55", 30, 240, black, font_tiny)
+#            draw_text("      Accessories: 35", 30, 260, black, font_tiny)
+#            draw_text("      Video Games: 95", 30, 280, black, font_tiny)
 
+            
 pygame.init()
 pygame.font.init()
 
@@ -68,7 +80,7 @@ complete_img = pygame.image.load("Complete_button.png").convert_alpha()
 clear_img = pygame.image.load("Clear_button.png").convert_alpha()
 board_img = pygame.image.load("Board_button.png").convert_alpha()
 mart_img = pygame.image.load("Mart_button.png").convert_alpha()
-
+buy_img = pygame.image.load("Buy_button.png").convert_alpha()
 
 score_file = "Members"
 # The peice of code below make sure the user's input is in the correct format
@@ -239,8 +251,8 @@ total_points_file = 'total_points.txt'
 #    os.remove(saved_file)
 #if os.path.exists(points_file):
 #    os.remove(points_file)
-if os.path.exists(total_points_file):
-    os.remove(total_points_file)
+#if os.path.exists(total_points_file):
+#    os.remove(total_points_file)
 
 
 points_count = sum(map(int, load_tasks(points_file)))
@@ -261,7 +273,7 @@ text_input_1 = Text_box(50, 400, 550, 30)
 text_input_2 = Text_box(460, 250, 150, 30)
 text_input_3 = Text_box(50, 250, 550, 30)
 text_input_4 = Text_box(460, 400, 150, 30)
-text_input_5 = Text_box(50 , 155 , 550 , 30)
+text_input_5 = Text_box(350 , 300 , 250 , 30)
 add_button = Button(60 ,500, add_img , 0.25)
 view_button = Button(225, 485 , view_img , 0.25)
 set_button = Button(250,500, set_img , 0.25)
@@ -272,6 +284,7 @@ complete_button = Button(475 , 300 , complete_img , 0.30)
 clear_button = Button(375 , 480 , clear_img , 0.30)
 board_button = Button(0, 170 , board_img , 0.40)
 mart_button = Button(0,550,mart_img,0.40)
+buy_button = Button(445 , 350 , buy_img , 0.2)
 
 def view_screen():
     while True:
@@ -411,28 +424,47 @@ def mart_screen():
     while True:
          while True:
             screen.fill("#CCCCFF")
-            
+            counter(font_X, font_Y, font_counter)
             for event in pygame.event.get():
+                text_input_5.handle_events(event)
+
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    if buy_button.draw() == True:
+                        object_choice = text_input_5.text
+                        if object_choice :
+                            global items
+                            if object_choice in items:
+                                global prices
+                                global points_count
+                                index = items.index(object_choice)
+                                corresponding_prices = prices[index]
+                                if points_count >= corresponding_prices:
+                                    points_count -= corresponding_prices
+                                    object_choice = ""
+
+
+                    
                     if exit_button_5.draw() == True:
                         return  
             draw_text("Average prices for usable items using points :", 30, 75, black,font)
-            draw_text("      1.Stationary: 25", 30, 100, black,font_tiny)
-            draw_text("      2.Candy: 30", 30, 120,black,font_tiny)
-            draw_text("      3.Books: 50", 30, 140, black,font_tiny)
-            draw_text("      4.Chocolate: ", 30, 160, black, font_tiny)
-            draw_text("      4.Outside Food: 115", 30, 180, black, font_tiny)
-            draw_text("      4.Makeup: 60", 30, 200, black, font_tiny)
-            draw_text("      4.Sports: 50", 30, 220, black, font_tiny)
-            draw_text("      4.Clothes: 55", 30, 240, black, font_tiny)
-            draw_text("      4.Accessories: 35", 30, 260, black, font_tiny)
-            draw_text("      6.Vedio Games: 95", 30, 280, black, font_tiny)
+            draw_text("      Stationary: 25", 30, 100, black,font_tiny)
+            draw_text("      Candy: 30", 30, 120,black,font_tiny)
+            draw_text("      Books: 50", 30, 140, black,font_tiny)
+            draw_text("      Chocolate: 30", 30, 160, black, font_tiny)
+            draw_text("      Outside Food: 115", 30, 180, black, font_tiny)
+            draw_text("      Makeup: 60", 30, 200, black, font_tiny)
+            draw_text("      Sports: 50", 30, 220, black, font_tiny)
+            draw_text("      Clothes: 55", 30, 240, black, font_tiny)
+            draw_text("      Accessories: 35", 30, 260, black, font_tiny)
+            draw_text("      Vedio Games: 95", 30, 280, black, font_tiny)
 
-            
+            draw_text("Items to buy:", 375 , 250 , black , font_sub )
 
+            text_input_5.draw()
+            buy_button.draw()
             exit_button_5.draw()
 
             pygame.display.update()
@@ -477,12 +509,12 @@ def shop_screen():
             draw_text("      2.Candy: 10 - 50", 30, 280,white,font_tiny)
             draw_text("      3.Books: 20 - 80", 30, 320, white,font_tiny)
             draw_text("      4.Chocolate: 10 - 50", 30, 360, white, font_tiny)
-            draw_text("      4.Outside Food: 80 - 150", 30, 400, white, font_tiny)
-            draw_text("      4.Makeup: 40-80", 30, 440, white, font_tiny)
-            draw_text("      4.Sports: 40-60", 30, 480, white, font_tiny)
-            draw_text("      4.Clothes: 40-70", 30, 520, white, font_tiny)
-            draw_text("      4.Accessories: 20-50", 30, 560, white, font_tiny)
-            draw_text("      6.Vedio Games: 70-120", 30, 600, white, font_tiny)
+            draw_text("      5.Outside Food: 80 - 150", 30, 400, white, font_tiny)
+            draw_text("      6.Makeup: 40-80", 30, 440, white, font_tiny)
+            draw_text("      7.Sports: 40-60", 30, 480, white, font_tiny)
+            draw_text("      8.Clothes: 40-70", 30, 520, white, font_tiny)
+            draw_text("      9.Accessories: 20-50", 30, 560, white, font_tiny)
+            draw_text("      10.Vedio Games: 70-120", 30, 600, white, font_tiny)
             
             exit_button.draw()
 
@@ -536,6 +568,7 @@ while run :
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            saved_file(total_points_file , points_count)
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             if mart_button.draw() == True :
