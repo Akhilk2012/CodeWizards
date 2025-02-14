@@ -3,6 +3,8 @@ import os
 
 pygame.init()
 
+clock = pygame.time.Clock()
+fps = 60
 run = True
 
 saved_file = "tasks.txt"
@@ -17,6 +19,7 @@ green = (0,0,255)
 bg_color = (135,206,235)
 
 font = pygame.font.SysFont('Arial', 20)
+font_1 = pygame.font.Font("freesansbold.ttf" , 40)
 
 screen_width = 640
 screen_height = 640
@@ -30,8 +33,9 @@ pygame.display.set_icon(diplay_icon)
 exit_img = pygame.image.load("Exit_button.png").convert_alpha()
 struct_img = pygame.image.load("Struct_button.png").convert_alpha()
 
-def draw_text(text, x, y, color):
-    screen.blit(font.render(text, True, color), (x, y))
+def draw_text(text, x, y, color,font):
+    use = font 
+    screen.blit(use.render(text, True, color), (x, y))
     
 
 class Button():
@@ -76,13 +80,18 @@ def struct_screen():
                         return  # Exit struct_screen() and go back to main screen
 
             # Draw exit button
-            draw_text("Struct Screen", 200, 200, white)
+            draw_text("Instructions", 250, 30, white,font)
+            draw_text("Our software is a task manager that helps in gathering and ", 30, 80, white,font)
+            draw_text( "recording tasks we need to complete.", 30, 100, white,font)
+            draw_text("Features we have in our product are:", 30, 150, white,font)
+            draw_text("1.Add: The add button lets you mention what tasks you have", 30, 170, white,font)
 
             exit_button.draw()
 
             pygame.display.update()
 
 while run :
+    clock.tick(fps)
     screen.fill(bg_color)
     struct_button.draw()
     for event in pygame.event.get():
@@ -91,9 +100,8 @@ while run :
         if event.type == pygame.MOUSEBUTTONDOWN:
             if struct_button.draw() == True :
                 struct_screen()
-            
+    draw_text("Task Manager", 200, 100, black , font_1)
     pygame.display.flip()
-
     pygame.display.update()
 
 pygame.quit()
