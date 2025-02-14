@@ -1,4 +1,4 @@
-import pygame
+import pygame , sys 
 import os
 
 pygame.init()
@@ -28,9 +28,11 @@ diplay_icon = pygame.image.load("Windows_icon.png").convert_alpha()
 pygame.display.set_icon(diplay_icon)
 
 exit_img = pygame.image.load("Exit_button.png").convert_alpha()
+struct_img = pygame.image.load("Struct_button.png").convert_alpha()
 
-def draw_text(text, x, y, color=black):
+def draw_text(text, x, y, color):
     screen.blit(font.render(text, True, color), (x, y))
+    
 
 class Button():
     def __init__(self,x,y,image,scale) :
@@ -58,18 +60,41 @@ class Button():
         return action
 
 exit_button = Button( 525, 0 , exit_img , 0.25)
+struct_button = Button( 0, 0 , struct_img, 0.15)
+def struct_screen():
+    while True:
+         while True:
+            screen.fill(black)
+        
+            # Event handling
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if exit_button.draw() == True:
+                        return  # Exit struct_screen() and go back to main screen
+
+            # Draw exit button
+            draw_text("Struct Screen", 200, 200, white)
+
+            exit_button.draw()
+
+            pygame.display.update()
 
 while run :
     screen.fill(bg_color)
-
-    if exit_button.draw() == True :
-        run = False
+    struct_button.draw()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-    
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if struct_button.draw() == True :
+                struct_screen()
+            
     pygame.display.flip()
 
     pygame.display.update()
 
 pygame.quit()
+sys.exit()
