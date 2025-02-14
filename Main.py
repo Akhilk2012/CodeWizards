@@ -125,6 +125,10 @@ def struct_screen():
             draw_text("  always be saved when the sofware is closed.", 30, 230, white,font)
             draw_text("  2.Delete: The delete button lets you delete a specific tasks you", 30, 270, white,font)
             draw_text("  mentioned in the sofware.", 30, 290, white,font)
+            draw_text("  3.View: The view button lets you see what tasks you have yet,", 30, 330, white,font)
+            draw_text("  to complete and mark a task if you have completed it.", 30, 350, white, font )
+            draw_text("  Once a task is marked completed the pointes mentioned for", 30, 370, white, font )
+            draw_text("  the task will be added to your points counter.", 30, 390, white, font)
             exit_button.draw()
 
             pygame.display.update()
