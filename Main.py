@@ -48,6 +48,11 @@ def load_tasks(filename):
         tasks = file.readlines()
     return [task.strip() for task in tasks]
 
+def save_tasks(filename, tasks):
+    with open(filename, 'w') as file:
+        for task in tasks :
+            file.write(task + '\n')
+        
 def draw_text(text, x, y, color,font):
     use = font 
     screen.blit(use.render(text, True, color), (x, y))
@@ -102,6 +107,7 @@ class Text_box():
         pygame.draw.rect(screen, color, self.rect, 2)
         draw_text(self.text, self.rect.x + 5, self.rect.y + 5, white, font_2)
 
+tasks = load_tasks(saved_file)
 exit_button = Button( 525, 0 , exit_img , 0.25)
 exit_button_1 = Button( 525, 0 , exit_img , 0.25)
 struct_button = Button( 0, 0 , struct_img, 0.15)
@@ -120,6 +126,12 @@ def main_screen():
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    if add_button.draw() == True:
+                        task_typed = text_input_1.text 
+                        if task_typed :
+                            tasks.append(task_typed)
+                            text_input_1.text = ""
+                            save_tasks(saved_file, tasks)
                     if exit_button_1.draw() == True:
                         return  # Exit struct_screen() and go back to main screen by return
             
