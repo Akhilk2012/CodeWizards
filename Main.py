@@ -197,7 +197,7 @@ def main_screen():
                         view_screen()
                     if exit_button_1.draw() == True:
                         return  # Exit struct_screen() and go back to main screen by return
-            
+            draw_text("Function Page", 250, 30, white,font_sub)
             text_input_1.draw()
             exit_button_1.draw() # Second exit button for second screen 
             add_button.draw()
