@@ -1,6 +1,6 @@
 import pygame , sys 
 import os
-
+from itertools import zip_longest
 pygame.init()
 pygame.font.init()
 
@@ -9,7 +9,8 @@ fps = 60
 run = True
 
 saved_file = "tasks.txt"
-
+points_file = "points.txt"
+ 
 # These are some colors we can use later on in the program to create our software
 white = (255,255,255)
 black = (0,0,0)
@@ -25,8 +26,8 @@ font_1 = pygame.font.Font("freesansbold.ttf" , 40)
 font_2 = pygame.font.Font("freesansbold.ttf" , 20)
 font_counter = pygame.font.Font("freesansbold.ttf" , 28 )
 font_X = 446
-font_Y = 10
-points = 0
+font_Y = 100
+points_count = 0
 screen_width = 640
 screen_height = 640
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -40,7 +41,8 @@ exit_img = pygame.image.load("Exit_button.png").convert_alpha()
 struct_img = pygame.image.load("Struct_button.png").convert_alpha()
 start_button = pygame.image.load("Start_button.png").convert_alpha()
 add_img = pygame.image.load("Add_button.png").convert_alpha()
-
+view_img = pygame.image.load("View_button.png").convert_alpha()
+set_img = pygame.image.load("Set_button.png").convert_alpha()
 def load_tasks(filename):
     if not os.path.exists(filename):
         return []
@@ -52,14 +54,16 @@ def save_tasks(filename, tasks):
     with open(filename, 'w') as file:
         for task in tasks :
             file.write(task + '\n')
-        
+
+
+
 def draw_text(text, x, y, color,font):
     use = font 
     screen.blit(use.render(text, True, color), (x, y))
     
 def counter(x,y,font):
     count = font
-    point_counter = count.render(f"Points : {points}" , True , ("#879CEB"))
+    point_counter = count.render(f"Points : {points_count}" , True , ("#879CEB"))
     screen.blit(point_counter, (x,y))
 
 class Button():
@@ -108,12 +112,64 @@ class Text_box():
         draw_text(self.text, self.rect.x + 5, self.rect.y + 5, white, font_2)
 
 tasks = load_tasks(saved_file)
+points = load_tasks(points_file)
 exit_button = Button( 525, 0 , exit_img , 0.25)
 exit_button_1 = Button( 525, 0 , exit_img , 0.25)
+exit_button_2 = Button( 525, 0 , exit_img , 0.25)
 struct_button = Button( 0, 0 , struct_img, 0.15)
 start_button = Button( 225 , 290 , start_button , 0.30)
 text_input_1 = Text_box(50, 400, 550, 30)
+text_input_2 = Text_box(50, 250, 550, 30)
 add_button = Button(60 ,500, add_img , 0.25)
+view_button = Button(225, 500 , view_img , 0.25)
+set_button = Button(250,500, set_img , 0.25)
+
+def view_screen():
+    while True:
+         while True:
+            screen.fill("#0476D0")
+            y_offset = 50
+            draw_text("Tasks and Points:", 50, y_offset - 30 , black , font_sub)
+            counter(font_X, font_Y, font_counter)
+            for idx, (task, point) in enumerate(zip_longest(tasks, points), start=1):
+                task_text = f"{idx}. {task}" if task else ""
+                point_text = f"{point}" if point else ""
+                                 
+                draw_text(f"{task_text} - Points: {point_text}", 50, y_offset , black , font)
+                y_offset += 30
+                if y_offset > 600:
+                    break  # Limit to showing a few lines
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if exit_button.draw() == True:
+                        return  
+                
+            
+            exit_button.draw()
+            pygame.display.update()
+def point_screen():
+    while True:
+         while True:
+            screen.fill("#87EBD6")
+            for event in pygame.event.get():
+                text_input_2.handle_events(event)
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if set_button.draw() == True:
+                        points_typed = text_input_2.text 
+                        if points_typed :
+                            points.append(points_typed)
+                            text_input_2.text = ""
+                            save_tasks(points_file, points)
+                            return
+            set_button.draw()
+            text_input_2.draw()
+            pygame.display.update()
 def main_screen():
     while True:
          while True:
@@ -127,17 +183,22 @@ def main_screen():
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if add_button.draw() == True:
+                        point_screen()
                         task_typed = text_input_1.text 
                         if task_typed :
                             tasks.append(task_typed)
                             text_input_1.text = ""
                             save_tasks(saved_file, tasks)
+                        
+                    if view_button.draw() == True:
+                        view_screen()
                     if exit_button_1.draw() == True:
                         return  # Exit struct_screen() and go back to main screen by return
             
             text_input_1.draw()
             exit_button_1.draw() # Second exit button for second screen 
             add_button.draw()
+            view_button.draw() 
             pygame.display.update()
 def struct_screen():
     while True:
@@ -181,7 +242,6 @@ def struct_screen():
 while run :
     clock.tick(fps)
     screen.fill(bg_color)
-    counter(font_X, font_Y, font_counter)
     struct_button.draw()
     start_button.draw()
     for event in pygame.event.get():
