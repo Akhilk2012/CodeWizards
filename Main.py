@@ -44,6 +44,7 @@ add_img = pygame.image.load("Add_button.png").convert_alpha()
 view_img = pygame.image.load("View_button.png").convert_alpha()
 set_img = pygame.image.load("Set_button.png").convert_alpha()
 shop_img = pygame.image.load("Shop_button.png").convert_alpha()
+delete_img = pygame.image.load("Del_button.png").convert_alpha()
 
 def load_tasks(filename):
     if not os.path.exists(filename):
@@ -118,14 +119,17 @@ points = load_tasks(points_file)
 exit_button = Button( 525, 0 , exit_img , 0.25)
 exit_button_1 = Button( 525, 0 , exit_img , 0.25)
 exit_button_2 = Button( 525, 0 , exit_img , 0.25)
+
 struct_button = Button( 0, 0 , struct_img, 0.15)
 start_button = Button( 225 , 290 , start_button , 0.30)
 text_input_1 = Text_box(50, 400, 550, 30)
 text_input_2 = Text_box(50, 250, 550, 30)
+text_input_3 = Text_box(50, 250, 550, 30)
 add_button = Button(60 ,500, add_img , 0.25)
 view_button = Button(225, 500 , view_img , 0.25)
 set_button = Button(250,500, set_img , 0.25)
 shop_button = Button(0, 100 , shop_img , 0.25)
+delete_button = Button(550 , 150 , delete_img , 0.15)
 
 def view_screen():
     while True:
@@ -143,14 +147,29 @@ def view_screen():
                 if y_offset > 600:
                     break  # Limit to showing a few lines
             for event in pygame.event.get():
+                text_input_3.handle_events(event)
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    if delete_button.draw() == True:
+                        if text_input_3.text.isdigit():  # Check if the text is a number
+                            num_t_del = int(text_input_3.text)
+                            if 1 <= num_t_del <= len(tasks):
+                                removed_task = tasks.pop(num_t_del - 1)
+                                removed_point = points.pop(num_t_del - 1)
+                                print(f"Task '{removed_task}' has been deleted. Points '{removed_point}' have been deleted.")
+                                save_tasks(saved_file, tasks)
+                                save_tasks(points_file, points)
+                            else:
+                                print("Invalid task number.")
+                            text_input_3.text = ""  # Clear input after processing
+                        else:
+                            print("Please enter a valid number.")
                     if exit_button.draw() == True:
                         return  
-                
-            
+            text_input_3.draw()
+            delete_button.draw()       
             exit_button.draw()
             pygame.display.update()
 def point_screen():
@@ -199,7 +218,7 @@ def main_screen():
                         return  # Exit struct_screen() and go back to main screen by return
             draw_text("Function Page", 250, 30, white,font_sub)
             text_input_1.draw()
-            exit_button_1.draw() # Second exit button for second screen 
+            exit_button_1.draw()
             add_button.draw()
             view_button.draw() 
             pygame.display.update()
@@ -208,7 +227,6 @@ def shop_screen():
     while True:
          while True:
             screen.fill(black)
-        
             
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
