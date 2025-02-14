@@ -10,7 +10,7 @@ run = True
 
 saved_file = "tasks.txt"
 points_file = "points.txt"
- 
+
 # These are some colors we can use later on in the program to create our software
 white = (255,255,255)
 black = (0,0,0)
@@ -21,6 +21,7 @@ green = (0,0,255)
 bg_color = (135,206,235)
 
 font = pygame.font.SysFont('Arial', 20)
+font_tiny = pygame.font.SysFont('Arial', 15)
 font_sub = pygame.font.SysFont('Arial',27,bold= True)
 font_1 = pygame.font.Font("freesansbold.ttf" , 40)
 font_2 = pygame.font.Font("freesansbold.ttf" , 20)
@@ -119,17 +120,20 @@ points = load_tasks(points_file)
 exit_button = Button( 525, 0 , exit_img , 0.25)
 exit_button_1 = Button( 525, 0 , exit_img , 0.25)
 exit_button_2 = Button( 525, 0 , exit_img , 0.25)
-
+exit_button_3 = Button( 525, 0 , exit_img , 0.25)
 struct_button = Button( 0, 0 , struct_img, 0.15)
 start_button = Button( 225 , 290 , start_button , 0.30)
 text_input_1 = Text_box(50, 400, 550, 30)
-text_input_2 = Text_box(50, 250, 550, 30)
+text_input_2 = Text_box(460, 250, 150, 30)
 text_input_3 = Text_box(50, 250, 550, 30)
+text_input_4 = Text_box(50, 250, 550, 30)
 add_button = Button(60 ,500, add_img , 0.25)
 view_button = Button(225, 500 , view_img , 0.25)
 set_button = Button(250,500, set_img , 0.25)
+set_button_1 = Button(250,500, set_img , 0.25)
 shop_button = Button(0, 100 , shop_img , 0.25)
 delete_button = Button(550 , 150 , delete_img , 0.15)
+
 
 def view_screen():
     while True:
@@ -141,56 +145,57 @@ def view_screen():
             for idx, (task, point) in enumerate(zip_longest(tasks, points), start=1):
                 task_text = f"{idx}. {task}" if task else ""
                 point_text = f"{point}" if point else ""
-                                 
+                       
                 draw_text(f"{task_text} - Points: {point_text}", 50, y_offset , black , font)
                 y_offset += 30
                 if y_offset > 600:
                     break  # Limit to showing a few lines
-            for event in pygame.event.get():
-                text_input_3.handle_events(event)
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if delete_button.draw() == True:
-                        if text_input_3.text.isdigit():  # Check if the text is a number
-                            num_t_del = int(text_input_3.text)
-                            if 1 <= num_t_del <= len(tasks):
-                                removed_task = tasks.pop(num_t_del - 1)
-                                removed_point = points.pop(num_t_del - 1)
-                                print(f"Task '{removed_task}' has been deleted. Points '{removed_point}' have been deleted.")
-                                save_tasks(saved_file, tasks)
-                                save_tasks(points_file, points)
-                            else:
-                                print("Invalid task number.")
-                            text_input_3.text = ""  # Clear input after processing
-                        else:
-                            print("Please enter a valid number.")
-                    if exit_button.draw() == True:
-                        return  
-            text_input_3.draw()
-            delete_button.draw()       
-            exit_button.draw()
-            pygame.display.update()
-def point_screen():
-    while True:
-         while True:
-            screen.fill("#87EBD6")
             for event in pygame.event.get():
                 text_input_2.handle_events(event)
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    if delete_button.draw() == True:
+                        
+                        if text_input_2.text.isdigit():  # Check if the text is a number
+                            num_t_del = int(text_input_2.text)
+                            if 1 <= num_t_del <= len(tasks):
+                                removed_task = tasks.pop(num_t_del - 1)
+                                removed_point = points.pop(num_t_del - 1)
+                                print(f"Task '{removed_task}' has been deleted.Points '{removed_point}' have been deleted.")
+                                save_tasks(saved_file, tasks)
+                                save_tasks(points_file, points)
+                            else:
+                                print("Invalid task number.")
+                            text_input_2.text = ""  # Clear input after processing
+                        else:
+                            print("Please enter a valid number.")
+                    if exit_button_2.draw() == True:
+                        return  
+            text_input_2.draw()
+            delete_button.draw()       
+            exit_button_2.draw()
+            pygame.display.update()
+def point_screen():
+    while True:
+         while True:
+            screen.fill("#87EBD6")
+            for event in pygame.event.get():
+                text_input_3.handle_events(event)
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
                     if set_button.draw() == True:
-                        points_typed = text_input_2.text 
+                        points_typed = text_input_3.text 
                         if points_typed :
                             points.append(points_typed)
-                            text_input_2.text = ""
+                            text_input_3.text = ""
                             save_tasks(points_file, points)
                             return
             set_button.draw()
-            text_input_2.draw()
+            text_input_3.draw()
             pygame.display.update()
 def main_screen():
     while True:
@@ -236,6 +241,23 @@ def shop_screen():
                     if exit_button.draw() == True:
                         return  
             draw_text("Exampler usage of points", 180, 30, white,font_sub)
+            draw_text("Your points can be used for various things.", 30, 100, white,font_tiny)
+            draw_text("Depending on how many points your adding in a task, parents can let their", 30, 120, white,font_tiny)
+            draw_text("children buy something they want for a set of points. For example if you add a lot of points for each task...like", 30, 140, white,font_tiny)
+            draw_text("a 100 points just for dishwashing then your item could be expensive, else it could be cheap", 30, 160, white,font_tiny)
+
+
+            draw_text("A few examples of things you can buy are:", 30, 200, white,font)
+            draw_text("      1.Stationary: 5 - 50", 30, 240, white,font_tiny)
+            draw_text("      2.Candy: 10 - 50", 30, 280,white,font_tiny)
+            draw_text("      3.Books: 20 - 80", 30, 320, white,font_tiny)
+            draw_text("      4.Chocolate: 10 - 50", 30, 360, white, font_tiny)
+            draw_text("      4.Outside Food: 80 - 150", 30, 400, white, font_tiny)
+            draw_text("      4.Makeup: 40-80", 30, 440, white, font_tiny)
+            draw_text("      4.Sports: 40-60", 30, 480, white, font_tiny)
+            draw_text("      4.Clothes: 40-70", 30, 520, white, font_tiny)
+            draw_text("      4.Accessories: 20-50", 30, 560, white, font_tiny)
+            draw_text("      6.Vedio Games: 70-120", 30, 600, white, font_tiny)
             
             exit_button.draw()
 
