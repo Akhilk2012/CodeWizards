@@ -2,9 +2,11 @@ import pygame , sys
 import os
 from itertools import zip_longest
 import random
-import threading
-import time
+#import time
+#import threading
+from datetime import date  
 
+today = date.today()
 choice_list = ["Bob" , "Daniel" , "John" , "Charlie"]
 
 
@@ -65,10 +67,40 @@ delete_img = pygame.image.load("Del_button.png").convert_alpha()
 complete_img = pygame.image.load("Complete_button.png").convert_alpha()
 clear_img = pygame.image.load("Clear_button.png").convert_alpha()
 board_img = pygame.image.load("Board_button.png").convert_alpha()
+mart_img = pygame.image.load("Mart_button.png").convert_alpha()
+
 
 score_file = "Members"
-def countdown_timer(seconds):
-    time.sleep(seconds)
+# The peice of code below make sure the user's input is in the correct format
+#def parse_time(user_input):
+#    try:
+#        hours, minutes, seconds = map(int, user_input.split(":"))
+#        return hours, minutes, seconds
+#    except ValueError:
+#        print("Invalid time format. Please enter in HH:MM:SS format.")
+#        return None
+    
+#def start_timer(hours, minutes, seconds):
+#    total_seconds = hours * 3600 + minutes * 60 + seconds
+#    print(f"Task will be deleted in {hours} hours, {minutes} minutes, and {seconds} seconds.")
+
+#    time.sleep(total_seconds)
+    
+#    delete_task()
+
+#def delete_task():
+#    print("Task has been deleted.")
+
+#def timer_thread(user_input):
+#    time_parts = parse_time(user_input)
+#    if time_parts:
+#        hours, minutes, seconds = time_parts
+#        timer_thread = threading.Thread(target=start_timer, args=(hours, minutes, seconds))
+#        timer_thread.start()
+#        timer_thread.join() 
+#    else:
+#        print("Error in input. Cannot start timer.")
+
 # Load scores from file
 def load_scores():
     scores = []
@@ -222,12 +254,14 @@ exit_button_1 = Button( 525, 0 , exit_img , 0.25)
 exit_button_2 = Button( 525, 0 , exit_img , 0.25)
 exit_button_3 = Button( 525, 0 , exit_img , 0.25)
 exit_button_4 = Button( 525, 0 , exit_img , 0.25)
+exit_button_5 = Button( 525, 0 , exit_img , 0.25)
 struct_button = Button( 0, 0 , struct_img, 0.15)
 start_button = Button( 225 , 290 , start_button , 0.30)
 text_input_1 = Text_box(50, 400, 550, 30)
 text_input_2 = Text_box(460, 250, 150, 30)
 text_input_3 = Text_box(50, 250, 550, 30)
 text_input_4 = Text_box(460, 400, 150, 30)
+text_input_5 = Text_box(50 , 155 , 550 , 30)
 add_button = Button(60 ,500, add_img , 0.25)
 view_button = Button(225, 485 , view_img , 0.25)
 set_button = Button(250,500, set_img , 0.25)
@@ -237,6 +271,7 @@ delete_button = Button(550 , 150 , delete_img , 0.15)
 complete_button = Button(475 , 300 , complete_img , 0.30)
 clear_button = Button(375 , 480 , clear_img , 0.30)
 board_button = Button(0, 170 , board_img , 0.40)
+mart_button = Button(0,550,mart_img,0.40)
 
 def view_screen():
     while True:
@@ -249,7 +284,7 @@ def view_screen():
                 task_text = f"{idx}. {task}" if task else ""
                 point_text = f"{point}" if point else ""
                        
-                draw_text(f"{task_text} - Points: {point_text}", 50, y_offset , black , font)
+                draw_text(f"{task_text} - Points: {point_text} - Date: {today.strftime('%d-%m-%Y')}", 50, y_offset , black , font)
                 y_offset += 30
                 if y_offset > 600:
                     break  # Limit to showing a few lines
@@ -309,6 +344,7 @@ def point_screen():
             screen.fill("#87EBD6")
             for event in pygame.event.get():
                 text_input_3.handle_events(event)
+
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
@@ -319,7 +355,8 @@ def point_screen():
                             points.append(points_typed)
                             text_input_3.text = ""
                             save_tasks(points_file, points)
-                            return
+                            return  
+                            
             draw_text("Points for the task :", 50, 200 , white,font_sub)
             set_button.draw()
             text_input_3.draw()
@@ -370,7 +407,35 @@ def main_screen():
             add_button.draw()
             view_button.draw() 
             pygame.display.update()
+def mart_screen():
+    while True:
+         while True:
+            screen.fill("#CCCCFF")
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if exit_button_5.draw() == True:
+                        return  
+            draw_text("Average prices for usable items using points :", 30, 75, black,font)
+            draw_text("      1.Stationary: 25", 30, 100, black,font_tiny)
+            draw_text("      2.Candy: 30", 30, 120,black,font_tiny)
+            draw_text("      3.Books: 50", 30, 140, black,font_tiny)
+            draw_text("      4.Chocolate: ", 30, 160, black, font_tiny)
+            draw_text("      4.Outside Food: 115", 30, 180, black, font_tiny)
+            draw_text("      4.Makeup: 60", 30, 200, black, font_tiny)
+            draw_text("      4.Sports: 50", 30, 220, black, font_tiny)
+            draw_text("      4.Clothes: 55", 30, 240, black, font_tiny)
+            draw_text("      4.Accessories: 35", 30, 260, black, font_tiny)
+            draw_text("      6.Vedio Games: 95", 30, 280, black, font_tiny)
 
+            
+
+            exit_button_5.draw()
+
+            pygame.display.update()
 def board_screen():
     while True:
          while True:
@@ -463,6 +528,7 @@ def struct_screen():
 while run :
     clock.tick(fps)
     screen.fill(bg_color)
+    mart_button.draw()
     board_button.draw()
     struct_button.draw()
     shop_button.draw()
@@ -472,6 +538,8 @@ while run :
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
+            if mart_button.draw() == True :
+                mart_screen()
             if struct_button.draw() == True :
                 struct_screen()
             if board_button.draw() == True :
