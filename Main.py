@@ -28,7 +28,6 @@ font_2 = pygame.font.Font("freesansbold.ttf" , 20)
 font_counter = pygame.font.Font("freesansbold.ttf" , 28 )
 font_X = 446
 font_Y = 100
-points_count = 0
 screen_width = 640
 screen_height = 640
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -38,6 +37,8 @@ pygame.display.set_caption("Task Manager")
 diplay_icon = pygame.image.load("Windows_icon.png").convert_alpha()
 pygame.display.set_icon(diplay_icon)
 
+
+
 exit_img = pygame.image.load("Exit_button.png").convert_alpha()
 struct_img = pygame.image.load("Struct_button.png").convert_alpha()
 start_button = pygame.image.load("Start_button.png").convert_alpha()
@@ -46,6 +47,8 @@ view_img = pygame.image.load("View_button.png").convert_alpha()
 set_img = pygame.image.load("Set_button.png").convert_alpha()
 shop_img = pygame.image.load("Shop_button.png").convert_alpha()
 delete_img = pygame.image.load("Del_button.png").convert_alpha()
+complete_img = pygame.image.load("Complete_button.png").convert_alpha()
+clear_img = pygame.image.load("Clear_button.png").convert_alpha()
 
 def load_tasks(filename):
     if not os.path.exists(filename):
@@ -117,6 +120,24 @@ class Text_box():
 
 tasks = load_tasks(saved_file)
 points = load_tasks(points_file)
+total_points_file = 'total_points.txt'
+
+
+#Testing clear files
+#if os.path.exists(saved_file):
+#    os.remove(saved_file)
+#if os.path.exists(points_file):
+#    os.remove(points_file)
+#if os.path.exists(total_points_file):
+#    os.remove(total_points_file)
+
+
+points_count = sum(map(int, load_tasks(points_file)))
+if os.path.exists(total_points_file):
+    with open(total_points_file, 'r') as file:
+        points_count = int(file.read().strip())
+else:
+    points_count = 0
 exit_button = Button( 525, 0 , exit_img , 0.25)
 exit_button_1 = Button( 525, 0 , exit_img , 0.25)
 exit_button_2 = Button( 525, 0 , exit_img , 0.25)
@@ -126,14 +147,15 @@ start_button = Button( 225 , 290 , start_button , 0.30)
 text_input_1 = Text_box(50, 400, 550, 30)
 text_input_2 = Text_box(460, 250, 150, 30)
 text_input_3 = Text_box(50, 250, 550, 30)
-text_input_4 = Text_box(50, 250, 550, 30)
+text_input_4 = Text_box(460, 400, 150, 30)
 add_button = Button(60 ,500, add_img , 0.25)
-view_button = Button(225, 500 , view_img , 0.25)
+view_button = Button(225, 485 , view_img , 0.25)
 set_button = Button(250,500, set_img , 0.25)
 set_button_1 = Button(250,500, set_img , 0.25)
 shop_button = Button(0, 100 , shop_img , 0.25)
 delete_button = Button(550 , 150 , delete_img , 0.15)
-
+complete_button = Button(475 , 300 , complete_img , 0.30)
+clear_button = Button(375 , 480 , clear_img , 0.30)
 
 def view_screen():
     while True:
@@ -151,6 +173,7 @@ def view_screen():
                 if y_offset > 600:
                     break  # Limit to showing a few lines
             for event in pygame.event.get():
+                text_input_4.handle_events(event)
                 text_input_2.handle_events(event)
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -164,16 +187,38 @@ def view_screen():
                                 removed_task = tasks.pop(num_t_del - 1)
                                 removed_point = points.pop(num_t_del - 1)
                                 print(f"Task '{removed_task}' has been deleted.Points '{removed_point}' have been deleted.")
+
                                 save_tasks(saved_file, tasks)
                                 save_tasks(points_file, points)
                             else:
                                 print("Invalid task number.")
+                        else:
+                            print("Please enter a valid number.")
+                    if complete_button.draw() == True:
+                        if text_input_4.text.isdigit():  # Check if the text is a number
+                            task_t_com = int(text_input_4.text)
+                            if 1 <= task_t_com <= len(tasks):
+                                complete_task = tasks.pop(task_t_com - 1)
+                                complete_point = points.pop(task_t_com - 1)
+                                if complete_point.isdigit():
+                                    global points_count
+                                    points_count += int(complete_point)
+                                    print(f"Points after addition: {points_count}")
+                                        
+                                    with open(total_points_file, 'w') as file:
+                                        file.write(str(points_count))
+                                print(f"Good job you completed : '{complete_task}'.Points '{complete_point}' have been acquired")
+
+                                save_tasks(saved_file, tasks)
+                                save_tasks(points_file, points)
                             text_input_2.text = ""  # Clear input after processing
                         else:
                             print("Please enter a valid number.")
                     if exit_button_2.draw() == True:
                         return  
             text_input_2.draw()
+            text_input_4.draw()
+            complete_button.draw()
             delete_button.draw()       
             exit_button_2.draw()
             pygame.display.update()
@@ -194,6 +239,7 @@ def point_screen():
                             text_input_3.text = ""
                             save_tasks(points_file, points)
                             return
+            draw_text("Points for the task :", 50, 200 , white,font_sub)
             set_button.draw()
             text_input_3.draw()
             pygame.display.update()
@@ -201,7 +247,7 @@ def main_screen():
     while True:
          while True:
             screen.fill("#1A7499")
-        
+
             # Event handling
             for event in pygame.event.get():
                 text_input_1.handle_events(event)
@@ -216,14 +262,30 @@ def main_screen():
                             tasks.append(task_typed)
                             text_input_1.text = ""
                             save_tasks(saved_file, tasks)
-                        
+                    
                     if view_button.draw() == True:
                         view_screen()
+                    if clear_button.draw() == True:
+                        tasks.clear()
+                        points.clear()
+                        text_input_1.text = ""
+                        text_input_2.text = ""
+                        text_input_3.text = ""
+                        text_input_4.text = ""
+                        save_tasks(saved_file, tasks)
+                        save_tasks(points_file, points)
                     if exit_button_1.draw() == True:
                         return  # Exit struct_screen() and go back to main screen by return
             draw_text("Function Page", 250, 30, white,font_sub)
+            draw_text("The function page includes different functions starting with the ability to", 30, 80, white,font)
+            draw_text("add a task and specify properites including the amount of points its worth and ", 30, 100, white,font)
+            draw_text("it will also be able to let us delete or complete tasks. This will let us ", 30, 120, white,font)
+            draw_text("claim points from tasks and manage them.", 30, 140, white,font)
+            draw_text("It is mandatory to fill in the points worth for the task !", 30, 160, white,font)
+            draw_text("Task :", 50, 350, white,font_sub)
             text_input_1.draw()
             exit_button_1.draw()
+            clear_button.draw()
             add_button.draw()
             view_button.draw() 
             pygame.display.update()
@@ -324,6 +386,8 @@ while run :
     draw_text("The button at the top left corner of the screen will show the " , 115 , 490, black , font) 
     draw_text("instructions on how to use the code," , 115 , 510, black , font)
     pygame.display.flip()
+    with open(total_points_file, 'w') as file:
+        file.write(str(points_count))
     pygame.display.update()
 
 pygame.quit()
