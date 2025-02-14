@@ -1,6 +1,13 @@
 import pygame , sys 
 import os
 from itertools import zip_longest
+import random
+import threading
+import time
+
+choice_list = ["Bob" , "Daniel" , "John" , "Charlie"]
+
+
 pygame.init()
 pygame.font.init()
 
@@ -13,13 +20,21 @@ points_file = "points.txt"
 
 # These are some colors we can use later on in the program to create our software
 white = (255,255,255)
-black = (0,0,0)
+
+gold = (255, 215, 0)  
+silver = (192, 192, 192)  
+bronze = (205, 127, 50) 
+gray = (180, 180, 180)
+black = (0, 0, 0)
+
+
 red = (255,0,0)
 blue = (0,255,0)
 green = (0,0,255)
 
 bg_color = (135,206,235)
 
+font_board = pygame.font.Font(None, 40)
 font = pygame.font.SysFont('Arial', 20)
 font_tiny = pygame.font.SysFont('Arial', 15)
 font_sub = pygame.font.SysFont('Arial',27,bold= True)
@@ -49,7 +64,71 @@ shop_img = pygame.image.load("Shop_button.png").convert_alpha()
 delete_img = pygame.image.load("Del_button.png").convert_alpha()
 complete_img = pygame.image.load("Complete_button.png").convert_alpha()
 clear_img = pygame.image.load("Clear_button.png").convert_alpha()
+board_img = pygame.image.load("Board_button.png").convert_alpha()
 
+score_file = "Members"
+def countdown_timer(seconds):
+    time.sleep(seconds)
+# Load scores from file
+def load_scores():
+    scores = []
+    if os.path.exists(score_file):
+        try:
+            with open(score_file, "r") as file:
+                for line in file:
+                    name, score = line.strip().split(",")
+                    scores.append((name, int(score)))
+        except Exception as e:
+            print(f"Error while reading the file: {e}")
+    else:
+        print(f"File '{score_file}' does not exist. Creating a new one.")
+        # Create the file if it doesn't exist
+        try:
+            with open(score_file, "w") as file:
+                pass  # Create an empty file
+        except Exception as e:
+            print(f"Error while creating the file: {e}")
+    return sorted(scores, key=lambda x: x[1], reverse=True) 
+
+def save_scores(scores):
+    try:
+        with open(score_file, "w") as file:
+            for name, score in scores:
+                file.write(f"{name},{score}\n")
+        print(f"Scores saved successfully to '{score_file}'")
+    except Exception as e:
+        print(f"Error while saving the file: {e}")
+
+def add_score(name, score):
+    scores = load_scores()
+    scores.append((name, score))
+    scores = sorted(scores, key=lambda x: x[1], reverse=True)[:5]  # Keep top 5
+    save_scores(scores)
+
+# Draw leaderboard with a cool style
+def draw_leaderboard():
+    screen.fill((0, 50, 100))  # Dark blue background
+
+    # Title
+    title_text = font_board.render("🏆 Leaderboard 🏆", True, white)
+    screen.blit(title_text, (screen_width // 2 - title_text.get_width() // 2, 20))
+
+
+    scores = load_scores()
+    rank_colors = [gold, silver, bronze, white , gray]  # Different colors for ranking
+
+    for i, (name, score) in enumerate(scores[:5]):  # Display up to 5 scores
+        color = rank_colors[i] if i < len(rank_colors) else white  # Assign color
+        text = font_board.render(f"{i + 1}. {name} - {score}", True, color)
+        screen.blit(text, (150, 80 + i * 50))
+
+add_score("Alice", 150)
+add_score("Bob", 200)
+add_score("Charlie", 180)
+add_score("David", 170)
+add_score("Eve", 160)
+
+#save_scores("Members.txt")
 def load_tasks(filename):
     if not os.path.exists(filename):
         return []
@@ -128,8 +207,8 @@ total_points_file = 'total_points.txt'
 #    os.remove(saved_file)
 #if os.path.exists(points_file):
 #    os.remove(points_file)
-#if os.path.exists(total_points_file):
-#    os.remove(total_points_file)
+if os.path.exists(total_points_file):
+    os.remove(total_points_file)
 
 
 points_count = sum(map(int, load_tasks(points_file)))
@@ -142,6 +221,7 @@ exit_button = Button( 525, 0 , exit_img , 0.25)
 exit_button_1 = Button( 525, 0 , exit_img , 0.25)
 exit_button_2 = Button( 525, 0 , exit_img , 0.25)
 exit_button_3 = Button( 525, 0 , exit_img , 0.25)
+exit_button_4 = Button( 525, 0 , exit_img , 0.25)
 struct_button = Button( 0, 0 , struct_img, 0.15)
 start_button = Button( 225 , 290 , start_button , 0.30)
 text_input_1 = Text_box(50, 400, 550, 30)
@@ -156,6 +236,7 @@ shop_button = Button(0, 100 , shop_img , 0.25)
 delete_button = Button(550 , 150 , delete_img , 0.15)
 complete_button = Button(475 , 300 , complete_img , 0.30)
 clear_button = Button(375 , 480 , clear_img , 0.30)
+board_button = Button(0, 170 , board_img , 0.40)
 
 def view_screen():
     while True:
@@ -290,6 +371,23 @@ def main_screen():
             view_button.draw() 
             pygame.display.update()
 
+def board_screen():
+    while True:
+         while True:
+            
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if exit_button_4.draw() == True:
+                        return  
+            draw_leaderboard()
+
+            exit_button_4.draw()
+
+            pygame.display.update()
 def shop_screen():
     while True:
          while True:
@@ -362,19 +460,22 @@ def struct_screen():
             exit_button.draw()
 
             pygame.display.update()
-
 while run :
     clock.tick(fps)
     screen.fill(bg_color)
+    board_button.draw()
     struct_button.draw()
     shop_button.draw()
     start_button.draw()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             if struct_button.draw() == True :
                 struct_screen()
+            if board_button.draw() == True :
+                board_screen()
             if shop_button.draw() == True :
                 shop_screen()
             if start_button.draw() == True :
