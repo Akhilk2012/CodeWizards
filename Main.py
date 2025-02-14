@@ -19,8 +19,9 @@ green = (0,0,255)
 bg_color = (135,206,235)
 
 font = pygame.font.SysFont('Arial', 20)
+font_sub = pygame.font.SysFont('Arial',27,bold= True)
 font_1 = pygame.font.Font("freesansbold.ttf" , 40)
-
+font_2 = pygame.font.Font("freesansbold.ttf" , 20)
 screen_width = 640
 screen_height = 640
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -80,12 +81,15 @@ def struct_screen():
                         return  # Exit struct_screen() and go back to main screen
 
             # Draw exit button
-            draw_text("Instructions", 250, 30, white,font)
+            draw_text("Instructions", 250, 30, white,font_sub)
             draw_text("Our software is a task manager that helps in gathering and ", 30, 80, white,font)
             draw_text( "recording tasks we need to complete.", 30, 100, white,font)
             draw_text("Features we have in our product are:", 30, 150, white,font)
-            draw_text("1.Add: The add button lets you mention what tasks you have", 30, 170, white,font)
-
+            draw_text("  1.Add: The add button lets you mention what tasks you have", 30, 190, white,font)
+            draw_text("  and enter them into the sofware...every task you add will", 30, 210, white,font)
+            draw_text("  always be saved when the sofware is closed.", 30, 230, white,font)
+            draw_text("  2.Delete: The delete button lets you delete a specific tasks you", 30, 270, white,font)
+            draw_text("  mentioned in the sofware.", 30, 290, white,font)
             exit_button.draw()
 
             pygame.display.update()
