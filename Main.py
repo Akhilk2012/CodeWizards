@@ -43,6 +43,8 @@ start_button = pygame.image.load("Start_button.png").convert_alpha()
 add_img = pygame.image.load("Add_button.png").convert_alpha()
 view_img = pygame.image.load("View_button.png").convert_alpha()
 set_img = pygame.image.load("Set_button.png").convert_alpha()
+shop_img = pygame.image.load("Shop_button.png").convert_alpha()
+
 def load_tasks(filename):
     if not os.path.exists(filename):
         return []
@@ -123,6 +125,7 @@ text_input_2 = Text_box(50, 250, 550, 30)
 add_button = Button(60 ,500, add_img , 0.25)
 view_button = Button(225, 500 , view_img , 0.25)
 set_button = Button(250,500, set_img , 0.25)
+shop_button = Button(0, 100 , shop_img , 0.25)
 
 def view_screen():
     while True:
@@ -200,6 +203,25 @@ def main_screen():
             add_button.draw()
             view_button.draw() 
             pygame.display.update()
+
+def shop_screen():
+    while True:
+         while True:
+            screen.fill(black)
+        
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if exit_button.draw() == True:
+                        return  
+            draw_text("Exampler usage of points", 180, 30, white,font_sub)
+            
+            exit_button.draw()
+
+            pygame.display.update()
 def struct_screen():
     while True:
          while True:
@@ -243,6 +265,7 @@ while run :
     clock.tick(fps)
     screen.fill(bg_color)
     struct_button.draw()
+    shop_button.draw()
     start_button.draw()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -250,9 +273,16 @@ while run :
         if event.type == pygame.MOUSEBUTTONDOWN:
             if struct_button.draw() == True :
                 struct_screen()
+            if shop_button.draw() == True :
+                shop_screen()
             if start_button.draw() == True :
                 main_screen()
-    draw_text("Task Manager", 185.67, 100, black , font_1)
+    draw_text("Task Manager", 186, 100, black , font_1)
+    draw_text("Welcome to the task manager !" , 175 , 180, black , font_2) 
+    draw_text("The button in the middle of the screen will take you to the" , 115 , 450, black , font) 
+    draw_text("main page with our functions" , 115 , 470, black , font)
+    draw_text("The button at the top left corner of the screen will show the " , 115 , 490, black , font) 
+    draw_text("instructions on how to use the code," , 115 , 510, black , font)
     pygame.display.flip()
     pygame.display.update()
 
