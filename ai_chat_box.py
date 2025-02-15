@@ -2,7 +2,7 @@ import random
 import tkinter as tk
 from tkinter import scrolledtext
 
-# Dictionary of chores categorized
+
 chores = {
     "cleaning": ["Vacuum the living room", "Wipe down kitchen counters", "Dust the shelves", "Mop the floors", "Clean the windows", "Organize the bookshelf"],
     "laundry": ["Wash clothes", "Fold laundry", "Sort socks", "Iron clothes", "Wash bed sheets"],
@@ -11,7 +11,6 @@ chores = {
 }
 
 def suggest_chore(query):
-    """Finds a relevant chore based on user input."""
     query = query.lower()
 
     for category, tasks in chores.items():
@@ -21,7 +20,6 @@ def suggest_chore(query):
     return "I don't have chores for that. Try asking about Cleaning, Laundry, Kitchen, or General tasks.\n"
 
 def send_message(event=None):
-    """Handles user input, sends messages, and displays responses."""
     user_input = entry.get().strip()
     if not user_input:
         return
@@ -37,11 +35,9 @@ def send_message(event=None):
         chat_box.insert(tk.END, f"ChoreBot: {response}\n\n", "bot")
 
 def clear_chat():
-    """Clears the chat window."""
     chat_box.delete("1.0", tk.END)
     chat_box.insert(tk.END, welcome_message, "bot")
 
-# UI setup
 root = tk.Tk()
 root.title("ChoreBot - AI Chatbox")
 root.geometry("450x500")
@@ -54,12 +50,10 @@ chat_box.pack(padx=10, pady=10)
 chat_box.tag_config("bot", foreground="blue", font=("Arial", 12, "italic"))
 chat_box.tag_config("user", foreground="black", font=("Arial", 12, "bold"))
 
-# Welcome message
 welcome_message = "ChoreBot: Hello! Ask me what chores you can do. Type 'exit' to quit.\n\n" \
                   "Questions to ask about:\n- Cleaning\n- Laundry\n- Kitchen\n- General\n\n"
 chat_box.insert(tk.END, welcome_message, "bot")
 
-# User input field
 entry = tk.Entry(root, width=50, font=("Arial", 12))
 entry.pack(pady=5)
 entry.bind("<Return>", send_message)  # Allows Enter key to send message
@@ -74,5 +68,4 @@ send_button.grid(row=0, column=0, padx=5, pady=5)
 clear_button = tk.Button(button_frame, text="Clear", command=clear_chat, font=("Arial", 12), bg="#f44336", fg="white", width=10)
 clear_button.grid(row=0, column=1, padx=5, pady=5)
 
-# Run the application
 root.mainloop()
