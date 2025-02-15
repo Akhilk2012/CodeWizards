@@ -51,8 +51,8 @@ black = (0, 0, 0)
 
 
 red = (255,0,0)
-blue = (0,255,0)
-green = (0,0,255)
+blue = (0,0,255)
+green = (0,255,0)
 
 bg_color = (135,206,235)
 
@@ -548,7 +548,7 @@ def shop_screen():
 def chat_screen():
     running = True
     while running:
-        screen.fill(white)
+        screen.fill("#6082B6")
         global chat_history
         global user_input
 
@@ -572,7 +572,6 @@ def chat_screen():
         screen.blit(send_text, (screen_width - 75, screen_height - 42))
         clear_text = font.render("Clear", True, white)
         screen.blit(clear_text, (screen_width - 165, screen_height - 42))
-    
         pygame.display.flip()
     
             # Event handling
@@ -672,6 +671,7 @@ while run :
     draw_text("main page with our functions" , 115 , 470, black , font)
     draw_text("The button at the top left corner of the screen will show the " , 115 , 490, black , font) 
     draw_text("instructions on how to use the code," , 115 , 510, black , font)
+    draw_text("ChoreBot - AI" , 475 , 520 , black , font_sub)
     pygame.display.flip()
     with open(total_points_file, 'w') as file:
         file.write(str(points_count))
