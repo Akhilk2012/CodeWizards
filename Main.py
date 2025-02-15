@@ -1,8 +1,27 @@
+import pygame
 import random
-import tkinter as tk
-from tkinter import scrolledtext
+import sys
 
+# Initialize pygame
+pygame.init()
 
+# Set up the window
+WIDTH, HEIGHT = 600, 500
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("ChoreBot - AI Chatbox")
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+BLUE = (50, 100, 255)
+GREEN = (76, 175, 80)
+RED = (244, 67, 54)
+
+# Fonts
+font = pygame.font.Font(None, 24)
+input_font = pygame.font.Font(None, 28)
+
+# Chore categories
 chores = {
     "cleaning": ["Vacuum the living room", "Wipe down kitchen counters", "Dust the shelves", "Mop the floors", "Clean the windows", "Organize the bookshelf"],
     "laundry": ["Wash clothes", "Fold laundry", "Sort socks", "Iron clothes", "Wash bed sheets"],
@@ -10,62 +29,72 @@ chores = {
     "general": ["Water the plants", "Feed the pets", "Declutter your workspace", "Clean your room", "Walk your pets", "Help in cooking", "Make your bed"]
 }
 
+# Function to suggest a chore
 def suggest_chore(query):
     query = query.lower()
-
     for category, tasks in chores.items():
         if category in query:
             return f"You can do this: {random.choice(tasks)}"
+    return "I don't have chores for that. Try asking about Cleaning, Laundry, Kitchen, or General tasks."
 
-    return "I don't have chores for that. Try asking about Cleaning, Laundry, Kitchen, or General tasks.\n"
+# Chat history
+chat_history = ["ChoreBot: Hello! Ask me what chores you can do. Type 'exit' to quit.",
+                "Questions to ask about: Cleaning, Laundry, Kitchen, General"]
+user_input = ""
 
-def send_message(event=None):
-    user_input = entry.get().strip()
-    if not user_input:
-        return
+running = True
+while running:
+    screen.fill(WHITE)
+    
+    # Display chat history
+    y_offset = 20
+    for line in chat_history[-10:]:  # Show last 10 messages
+        text_surface = font.render(line, True, BLUE if "ChoreBot:" in line else BLACK)
+        screen.blit(text_surface, (20, y_offset))
+        y_offset += 25
+    
+    # Display user input
+    input_surface = input_font.render(user_input, True, BLACK)
+    pygame.draw.rect(screen, (200, 200, 200), (20, HEIGHT - 50, WIDTH - 130, 30))
+    screen.blit(input_surface, (25, HEIGHT - 45))
+    
+    # Draw buttons
+    send_button = pygame.draw.rect(screen, GREEN, (WIDTH - 100, HEIGHT - 50, 80, 30))
+    clear_button = pygame.draw.rect(screen, RED, (WIDTH - 190, HEIGHT - 50, 80, 30))
+    
+    send_text = font.render("Send", True, WHITE)
+    screen.blit(send_text, (WIDTH - 75, HEIGHT - 42))
+    clear_text = font.render("Clear", True, WHITE)
+    screen.blit(clear_text, (WIDTH - 165, HEIGHT - 42))
+    
+    pygame.display.flip()
+    
+    # Event handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN and user_input:
+                chat_history.append(f"You: {user_input}")
+                if user_input.lower() in ["exit", "bye", "quit"]:
+                    chat_history.append("ChoreBot: Goodbye! Have a productive day. 👋")
+                    pygame.time.delay(1000)
+                    running = False
+                else:
+                    chat_history.append(f"ChoreBot: {suggest_chore(user_input)}")
+                user_input = ""
+            elif event.key == pygame.K_BACKSPACE:
+                user_input = user_input[:-1]
+            else:
+                user_input += event.unicode
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if send_button.collidepoint(event.pos) and user_input:
+                chat_history.append(f"You: {user_input}")
+                chat_history.append(f"ChoreBot: {suggest_chore(user_input)}")
+                user_input = ""
+            elif clear_button.collidepoint(event.pos):
+                chat_history = ["ChoreBot: Hello! Ask me what chores you can do. Type 'exit' to quit.",
+                                "Questions to ask about: Cleaning, Laundry, Kitchen, General"]
 
-    chat_box.insert(tk.END, f"You: {user_input}\n", "user")
-    entry.delete(0, tk.END)
-
-    if user_input.lower() in ["exit", "bye", "quit"]:
-        chat_box.insert(tk.END, "ChoreBot: Goodbye! Have a productive day. 👋\n", "bot")
-        root.after(1000, root.destroy)  # Close the window after 1 second
-    else:
-        response = suggest_chore(user_input)
-        chat_box.insert(tk.END, f"ChoreBot: {response}\n\n", "bot")
-
-def clear_chat():
-    chat_box.delete("1.0", tk.END)
-    chat_box.insert(tk.END, welcome_message, "bot")
-
-root = tk.Tk()
-root.title("ChoreBot - AI Chatbox")
-root.geometry("450x500")
-root.resizable(False, False)
-root.configure(bg="#f4f4f4")
-
-# Chat box with scrolling
-chat_box = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=55, height=20, font=("Arial", 12))
-chat_box.pack(padx=10, pady=10)
-chat_box.tag_config("bot", foreground="blue", font=("Arial", 12, "italic"))
-chat_box.tag_config("user", foreground="black", font=("Arial", 12, "bold"))
-
-welcome_message = "ChoreBot: Hello! Ask me what chores you can do. Type 'exit' to quit.\n\n" \
-                  "Questions to ask about:\n- Cleaning\n- Laundry\n- Kitchen\n- General\n\n"
-chat_box.insert(tk.END, welcome_message, "bot")
-
-entry = tk.Entry(root, width=50, font=("Arial", 12))
-entry.pack(pady=5)
-entry.bind("<Return>", send_message)  # Allows Enter key to send message
-
-# Buttons
-button_frame = tk.Frame(root, bg="#f4f4f4")
-button_frame.pack()
-
-send_button = tk.Button(button_frame, text="Send", command=send_message, font=("Arial", 12), bg="#4CAF50", fg="white", width=10)
-send_button.grid(row=0, column=0, padx=5, pady=5)
-
-clear_button = tk.Button(button_frame, text="Clear", command=clear_chat, font=("Arial", 12), bg="#f44336", fg="white", width=10)
-clear_button.grid(row=0, column=1, padx=5, pady=5)
-
-root.mainloop()
+pygame.quit()
+sys.exit()
