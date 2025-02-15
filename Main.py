@@ -81,7 +81,7 @@ clear_img = pygame.image.load("Clear_button.png").convert_alpha()
 board_img = pygame.image.load("Board_button.png").convert_alpha()
 mart_img = pygame.image.load("Mart_button.png").convert_alpha()
 buy_img = pygame.image.load("Buy_button.png").convert_alpha()
-
+chat_img = pygame.image.load("Chat_button.png").convert_alpha()
 score_file = "Members"
 # The peice of code below make sure the user's input is in the correct format
 #def parse_time(user_input):
@@ -267,13 +267,14 @@ exit_button_2 = Button( 525, 0 , exit_img , 0.25)
 exit_button_3 = Button( 525, 0 , exit_img , 0.25)
 exit_button_4 = Button( 525, 0 , exit_img , 0.25)
 exit_button_5 = Button( 525, 0 , exit_img , 0.25)
+exit_button_6 = Button( 525, 0 , exit_img , 0.25)
 struct_button = Button( 0, 0 , struct_img, 0.15)
 start_button = Button( 225 , 290 , start_button , 0.30)
 text_input_1 = Text_box(50, 400, 550, 30)
 text_input_2 = Text_box(460, 250, 150, 30)
 text_input_3 = Text_box(50, 250, 550, 30)
 text_input_4 = Text_box(460, 400, 150, 30)
-text_input_5 = Text_box(350 , 300 , 250 , 30)
+text_input_5 = Text_box(375 , 280 , 250 , 30)
 add_button = Button(60 ,500, add_img , 0.25)
 view_button = Button(225, 485 , view_img , 0.25)
 set_button = Button(250,500, set_img , 0.25)
@@ -285,6 +286,7 @@ clear_button = Button(375 , 480 , clear_img , 0.30)
 board_button = Button(0, 170 , board_img , 0.40)
 mart_button = Button(0,550,mart_img,0.40)
 buy_button = Button(445 , 350 , buy_img , 0.2)
+chat_button = Button(535 , 535 , chat_img , 0.5)
 
 def view_screen():
     while True:
@@ -444,6 +446,8 @@ def mart_screen():
                                 if points_count >= corresponding_prices:
                                     points_count -= corresponding_prices
                                     object_choice = ""
+                                else :
+                                    print("You do not have enough points to get this item.")
 
 
                     
@@ -460,7 +464,10 @@ def mart_screen():
             draw_text("      Clothes: 55", 30, 240, black, font_tiny)
             draw_text("      Accessories: 35", 30, 260, black, font_tiny)
             draw_text("      Vedio Games: 95", 30, 280, black, font_tiny)
-
+            draw_text("Please make sure you are using the correct exact replica of the items written",30, 320,black, font_tiny)
+            draw_text("in the list as they are the different items that are part of our list and will",30, 340,black, font_tiny)
+            draw_text("not work without the proper syntax , the syntax is the name only with the first",30, 360,black, font_tiny)
+            draw_text("letter of each word which is an item name",30, 380,black, font_tiny)
             draw_text("Items to buy:", 375 , 250 , black , font_sub )
 
             text_input_5.draw()
@@ -519,6 +526,22 @@ def shop_screen():
             exit_button.draw()
 
             pygame.display.update()
+def chat_screen():
+    while True:
+         while True:
+            screen.fill(black)
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if exit_button_4.draw() == True:
+                        return  
+
+            exit_button_4.draw()
+
+            pygame.display.update()
 def struct_screen():
     while True:
          while True:
@@ -563,18 +586,21 @@ while run :
     mart_button.draw()
     board_button.draw()
     struct_button.draw()
+    chat_button.draw()
     shop_button.draw()
     start_button.draw()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            saved_file(total_points_file , points_count)
+
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             if mart_button.draw() == True :
                 mart_screen()
             if struct_button.draw() == True :
                 struct_screen()
+            if chat_button.draw() == True :
+                chat_screen()
             if board_button.draw() == True :
                 board_screen()
             if shop_button.draw() == True :
